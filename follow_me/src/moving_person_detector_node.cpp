@@ -67,6 +67,7 @@ class moving_persons_detector
 
     //to store the goal to reach that we will be published
     geometry_msgs::Point goal_to_reach;
+    geometry_msgs::Point origin;
 
     // GRAPHICAL DISPLAY
     int nb_pts;
@@ -98,7 +99,8 @@ class moving_persons_detector
         init_robot = false;
         display_laser = false;
         display_robot = false;
-
+        origin.x=0;
+        origin.y=0;
         //INFINTE LOOP TO COLLECT LASER DATA AND PROCESS THEM
         ros::Rate r(10); // this node will run at 10hz
         while (ros::ok())
@@ -382,13 +384,26 @@ class moving_persons_detector
                     nb_moving_persons_detected++;
 
                     //update of the goal and publish of the goal
-                    //goal_to_reach.x = ... goal_to_reach.y = ...
+
                 }
             }
         }
+        
 
-        if (nb_moving_persons_detected)
+        if (nb_moving_persons_detected){
+        	float min=distancePoints(origin,moving_persons_detected[0]);
+        	int idx=0;
+        	for (int i = 1; i < nb_moving_persons_detected; ++i)
+        	{	
+        		if(distancePoints(origin,moving_persons_detected[i])<min){
+        			min=distancePoints(origin,moving_persons_detected[i]);
+        			idx=i;
+        		}
+        	}
             ROS_INFO("%d moving persons have been detected.\n", nb_moving_persons_detected);
+            goal_to_reach.x = moving_persons_detected[idx].x;
+        	goal_to_reach.y = moving_persons_detected[idx].y;
+        }
 
         ROS_INFO("moving persons detected");
 
