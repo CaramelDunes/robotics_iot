@@ -1,1 +1,4 @@
 version pour les etudiants
+from your catkin_ws:
+roslaunch follow_me FollowME.launch
+add "move:=true" to make the robot move
