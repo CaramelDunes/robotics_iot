@@ -3,24 +3,25 @@
 <launch>
 
 <!-- Start rviz visualization with preset config -->
-<!--<node pkg="rviz" type="rviz" name="rviz" args="-d $(find follow_me)/ 	rviz_cfg/3_outdoor_flight.rviz"/>-->
+<node pkg="rviz" type="rviz" name="rviz" args="-d $(find follow_me)/rviz_cfg/followme.rviz"/>
   
 <node name="robot_moving_node" pkg="follow_me" type="robot_moving_node" output="screen" />
 
 <node name="moving_person_detector_node" pkg="follow_me" type="moving_person_detector_node" output="screen" />
 
-<node name="rotation_node" pkg="follow_me" type="rotation_node" output="screen" />
-
-<node name="translation_node" pkg="follow_me" type="translation_node" output="screen" />
 
 <node name="obstacle_detection_node" pkg="follow_me" type="obstacle_detection_node" output="screen" />
 
-<node name="decision_node" pkg="follow_me" type="decision_node" output="screen" />
 
 
-<!--<arg name="walk" default="false" />
-  <group if="$(arg walk)">
-    <node name="main1" pkg="cpg_snake" type="main1.py" />
-  </group>-->
+<arg name="move" default="false" />
+  <group if="$(arg move)">
+    
+    <node name="decision_node" pkg="follow_me" type="decision_node" output="screen" />
+    
+    <node name="rotation_node" pkg="follow_me" type="rotation_node" output="screen" />
+    
+    <node name="translation_node" pkg="follow_me" type="translation_node" output="screen" />	
+  </group>
 
 </launch>
