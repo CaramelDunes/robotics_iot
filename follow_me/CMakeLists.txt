@@ -114,6 +114,7 @@ add_executable(rotation_node src/rotation_node.cpp)
 add_executable(translation_node src/translation_node.cpp)
 add_executable(obstacle_detection_node src/obstacle_detection_node.cpp)
 add_executable(decision_node src/decision_node.cpp)
+add_executable(movement_node src/movement_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -126,6 +127,7 @@ target_link_libraries(rotation_node ${catkin_LIBRARIES})
 target_link_libraries(translation_node ${catkin_LIBRARIES})
 target_link_libraries(obstacle_detection_node ${catkin_LIBRARIES})
 target_link_libraries(decision_node ${catkin_LIBRARIES})
+target_link_libraries(movement_node ${catkin_LIBRARIES})
 
 #############
 ## Install ##
