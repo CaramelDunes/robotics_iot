@@ -66,6 +66,11 @@ class MovementNode
 
 	float translation_rotation_ratio;
 
+	float map(float val,float start1,float stop1,float start2,float stop2){
+	
+		return start2 + (stop2 - start2) * ((val - start1) / (stop1 - start1));
+	}
+
   public:
 	MovementNode()
 	{
@@ -220,33 +225,41 @@ class MovementNode
 				}
 			}
 
-			if (!rotation_done && !translation_done) {
+			if (!cond_rotation && !cond_translation) {
 				geometry_msgs::Point p;
 				p.x = translation_to_do;
 				p.y = rotation_to_do;
 				pub_movement_done.publish(p);
 			}
 
-			translation_rotation_ratio = rotation_speed / M_PI_2;
-
-			if (translation_rotation_ratio < 0) {
-				translation_rotation_ratio = 0;
-			} else if (translation_rotation_ratio > 1) {
-				translation_rotation_ratio = 1;
+			float ratio ;
+			#define THRSH 0.5
+		
+			if(rotation_speed > THRSH)
+			{
+				ratio = 1;
 			}
-
-			if (translation_speed > 1.5) {
-				translation_speed = 1.5;
+			else {
+				ratio = rotation_speed / THRSH;
 			}
+			// if (translation_rotation_ratio < 0) {
+			// 	translation_rotation_ratio = 0;
+			// } else if (translation_rotation_ratio > 1) {
+			// 	translation_rotation_ratio = 1;
+			// }
+
+			// if (translation_speed > 1.5) {
+			// 	translation_speed = 1.5;
+			// }
 
 			geometry_msgs::Twist twist;
-			twist.linear.x = translation_speed * (1 - translation_rotation_ratio);
+			twist.linear.x = translation_speed * (1-ratio);
 			twist.linear.y = 0;
 			twist.linear.z = 0;
 
 			twist.angular.x = 0;
 			twist.angular.y = 0;
-			twist.angular.z = rotation_speed * translation_rotation_ratio;
+			twist.angular.z = rotation_speed * ratio;
 
 			pub_cmd_vel.publish(twist);
 		}
