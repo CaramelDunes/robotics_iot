@@ -19,9 +19,7 @@
     
     <node name="decision_node" pkg="follow_me" type="decision_node" output="screen" />
     
-    <node name="rotation_node" pkg="follow_me" type="rotation_node" output="screen" />
-    
-    <node name="translation_node" pkg="follow_me" type="translation_node" output="screen" />	
+    <node name="movement_node" pkg="follow_me" type="movement_node" output="screen" />	
   </group>
 
 </launch>
