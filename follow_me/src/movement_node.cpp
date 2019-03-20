@@ -227,7 +227,17 @@ class MovementNode
 				pub_movement_done.publish(p);
 			}
 
-			translation_rotation_ratio = rotation_speed > 0 ? 1 : 0;
+			translation_rotation_ratio = rotation_speed / M_PI_2;
+
+			if (translation_rotation_ratio < 0) {
+				translation_rotation_ratio = 0;
+			} else if (translation_rotation_ratio > 1) {
+				translation_rotation_ratio = 1;
+			}
+
+			if (translation_speed > 1.5) {
+				translation_speed = 1.5;
+			}
 
 			geometry_msgs::Twist twist;
 			twist.linear.x = translation_speed * (1 - translation_rotation_ratio);
