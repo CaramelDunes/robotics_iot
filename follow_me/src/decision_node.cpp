@@ -96,7 +96,7 @@ class decision
                 msg_movement_to_do.y = rotation_to_do;
 				pub_movement_to_do.publish(msg_movement_to_do);
 
-				state = 3;
+				state = 1;
 			} else {
 				geometry_msgs::Point msg_goal_reached;
 				msg_goal_reached.x = 0;

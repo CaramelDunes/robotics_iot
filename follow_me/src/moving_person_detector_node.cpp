@@ -6,6 +6,7 @@
 #include "sensor_msgs/LaserScan.h"
 #include "visualization_msgs/Marker.h"
 #include "geometry_msgs/Point.h"
+#include "geometry_msgs/Twist.h"
 #include "std_msgs/ColorRGBA.h"
 #include <cmath>
 #include "std_msgs/Bool.h"
@@ -32,7 +33,7 @@ class moving_persons_detector
   private:
     ros::NodeHandle n;
 
-    ros::Subscriber sub_scan;
+    ros::Subscriber sub_scan, sub_speed;
     ros::Subscriber sub_robot_moving;
 
     ros::Publisher pub_moving_persons_detector;
@@ -84,13 +85,16 @@ class moving_persons_detector
     bool display_laser;
     bool display_robot;
 
+    float last_translation_speed;
+    float Last_rotation_speed;
+
   public:
     moving_persons_detector()
     {
 
         sub_scan = n.subscribe("scan", 1, &moving_persons_detector::scanCallback, this);
         sub_robot_moving = n.subscribe("robot_moving", 1, &moving_persons_detector::robot_movingCallback, this);
-
+        sub_speed = n.subscribe("cmd_vel", 1, &moving_persons_detector::speedCallback, this);
         pub_moving_persons_detector_marker = n.advertise<visualization_msgs::Marker>("moving_person_detector", 1); // Preparing a topic to publish our results. This will be used by the visualization tool rviz
         pub_moving_persons_detector = n.advertise<geometry_msgs::Point>("goal_to_reach", 1);                       // Preparing a topic to publish the goal to reach.
 
@@ -128,7 +132,7 @@ class moving_persons_detector
 
             nb_pts = 0;
             //if the robot is not moving then we can perform moving persons detection
-            if (!current_robot_moving)
+            if (!current_robot_moving || true)
             {
 
                 ROS_INFO("robot is not moving");
@@ -200,7 +204,7 @@ class moving_persons_detector
         ROS_INFO("detecting motion");
 
         for (int loop = 0; loop < nb_beams; loop++) //loop over all the hits
-            if (abs(background[loop] - range[loop]) > detection_threshold)
+            if (abs(background[loop] - range[loop] - last_translation_speed/10) > detection_threshold)
                 dynamic[loop] = 1; //the current hit is dynamic
             else
                 dynamic[loop] = 0; //else its static
@@ -412,6 +416,13 @@ class moving_persons_detector
     //CALLBACKS
     /*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+    void speedCallback(const geometry_msgs::Twist::ConstPtr &speed){
+        last_translation_speed= speed->linear.x;
+        Last_rotation_speed = speed->angular.z;
+
+    }
+
+
     void scanCallback(const sensor_msgs::LaserScan::ConstPtr &scan)
     {
 
