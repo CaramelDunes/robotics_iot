@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define safety_distance 0.5
+#define safety_distance 0.1
 #define translation_error 0.1
 #define rotation_error 0.2 // radians
 #define kp 0.5
@@ -167,8 +167,8 @@ class MovementNode
 
 				translation_error_integral += error; // To complete
 				// ROS_INFO("error_integral: %f", error_integral);
-
-				// control of translation with a PID controller
+// 
+			// abs(	// control of) translation with a PID controller
 				translation_speed = kp * error + ki * translation_error_integral + kd * error_derivation;
 				ROS_INFO("(translation_node) translation_done: %f, translation_to_do: %f -> translation_speed: %f", translation_done, translation_to_do,
 				         translation_speed);
@@ -233,15 +233,17 @@ class MovementNode
 			}
 
 			float ratio ;
-			#define THRSH 0.5
+			#define THRSH 0.4
 		
-			if(rotation_speed > THRSH)
+			if((abs(rotation_speed) > THRSH && cond_rotation) || !cond_translation)
 			{
 				ratio = 1;
+				// translation_spee=0;
 			}
 			else {
-				ratio = rotation_speed / THRSH;
-			}
+				ratio = abs(rotation_speed) / THRSH;
+				// ratio=1;
+			}	
 			// if (translation_rotation_ratio < 0) {
 			// 	translation_rotation_ratio = 0;
 			// } else if (translation_rotation_ratio > 1) {

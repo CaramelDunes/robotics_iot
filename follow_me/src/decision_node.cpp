@@ -42,7 +42,7 @@ class decision
 		sub_goal_to_reach = n.subscribe("goal_to_reach", 1, &decision::goal_to_reachCallback, this);
 
 		// communication with rotation_action
-		pub_movement_to_do = n.advertise<geometry_msgs::Point>("movement_to_do", 0);
+		pub_movement_to_do = n.advertise<geometry_msgs::Point>("movement_to_do", 1);
 		sub_movement_done = n.subscribe("movement_done", 1, &decision::movement_doneCallback, this);
 
 		state = 1;
