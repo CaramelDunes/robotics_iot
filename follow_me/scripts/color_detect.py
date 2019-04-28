@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+    #!/usr/bin/env python
 import cv2
 import numpy as np
 import rospy
@@ -46,8 +46,8 @@ def image_callback(msg):
         res2 = cv2.bitwise_and(img, img, mask = blue)
 
         #Tracking Colour (Yellow) 
-        (_,contours,hierarchy)=cv2.findContours(yellow,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-        (_,contours2,hierarchy2)=cv2.findContours(blue,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        (contours,hierarchy)=cv2.findContours(yellow,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+        (contours2,hierarchy2)=cv2.findContours(blue,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         
         # for pic, contour in enumerate(contours):
         #         area = cv2.contourArea(contour)
@@ -81,7 +81,7 @@ def image_callback(msg):
 def main():
     # rospy.init_node('image_listener')
     rospy.init_node('Color_detector')
-    image_topic = "/camera/image_raw"
+    image_topic = "/image_raw"
 
     rospy.Subscriber(image_topic, Image, image_callback)
     

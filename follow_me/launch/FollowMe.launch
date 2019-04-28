@@ -21,7 +21,7 @@
     
     <node name="movement_node" pkg="follow_me" type="movement_node" output="screen" />
     
-    <!--<node pkg="follow_me" name="color_detect.py" type="color_detect.py" output="screen">-->	
+    <!--<node pkg="follow_me" name="color_detect.py" type="color_detect.py" output="screen"/>-->	
 
   </group>
 

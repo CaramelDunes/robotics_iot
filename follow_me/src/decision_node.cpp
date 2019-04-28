@@ -4,6 +4,7 @@
 #include "ros/ros.h"
 #include "std_msgs/Float32.h"
 #include "std_msgs/String.h"
+#include "std_msgs/Bool.h"
 #include <cmath>
 #include <geometry_msgs/Twist.h>
 #include <tf/transform_datatypes.h>
@@ -21,6 +22,8 @@ class decision
 	ros::Publisher pub_movement_to_do;
 	ros::Subscriber sub_movement_done;
 
+	ros::Subscriber sub_color_detection_status;
+
 	geometry_msgs::Point movement_to_do; // x = translation, y = rotation
 	geometry_msgs::Point movement_done;
 
@@ -32,6 +35,7 @@ class decision
 
 	int state;
 	bool display_state;
+	bool detected_color;
 
   public:
 	decision()
@@ -45,10 +49,14 @@ class decision
 		pub_movement_to_do = n.advertise<geometry_msgs::Point>("movement_to_do", 1);
 		sub_movement_done = n.subscribe("movement_done", 1, &decision::movement_doneCallback, this);
 
+		sub_color_detection_status=n.subscribe("color_detected", 1,&decision::color_detectionCallback, this);
+
 		state = 1;
 		display_state = false;
 		new_goal_to_reach = false;
 		new_movement_done = false;
+
+		detected_color=true;
 
 		// INFINTE LOOP TO COLLECT LASER DATA AND PROCESS THEM
 		ros::Rate r(10); // this node will work at 10hz
@@ -71,7 +79,8 @@ class decision
 		}
 
 		// we receive a new /goal_to_reach and robair is not doing a translation or a rotation
-		if ((new_goal_to_reach) && (state == 1)) {
+		if ((new_goal_to_reach) && (state == 1) && detected_color== true)
+		  {
 
 			ROS_INFO("(decision_node) /goal_to_reach received: (%f, %f)", goal_to_reach.x, goal_to_reach.y);
 			new_goal_to_reach = false;
@@ -90,10 +99,16 @@ class decision
 				display_state = false;
 
 				ROS_INFO("(decision_node) /rotation_to_do: %f", rotation_to_do * 180 / M_PI);
-
 				geometry_msgs::Point msg_movement_to_do;
-				msg_movement_to_do.x = translation_to_do;
-                msg_movement_to_do.y = rotation_to_do;
+
+				if(abs(rotation_to_do)  > 1.3 ){
+					msg_movement_to_do.x = 0;
+					msg_movement_to_do.y = 0;
+				}
+				else{
+					msg_movement_to_do.x = translation_to_do;
+                	msg_movement_to_do.y = rotation_to_do;
+				}
 				pub_movement_to_do.publish(msg_movement_to_do);
 
 				state = 1;
@@ -108,7 +123,7 @@ class decision
 		}
 
 		// we receive an ack from translation_action_node. So, we send an ack to the moving_persons_detector_node
-		if ((new_movement_done) && (state == 3)) {
+		if ((new_movement_done) && (state == 3) && detected_color== true ) {
 			ROS_INFO("(decision_node) /movement_done : %f,%lf\n", movement_done.x, movement_done.y);
 			new_movement_done = false;
 
@@ -149,6 +164,13 @@ class decision
 		new_movement_done = true;
 		movement_done.x = r->x;
         movement_done.y = r->y;
+	}
+
+	void color_detectionCallback(const std_msgs::Bool::ConstPtr& det)
+	{
+		// process the range received from the translation node
+
+		detected_color = det->data;
 	}
 
 	// Distance between two points

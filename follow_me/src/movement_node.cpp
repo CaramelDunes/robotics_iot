@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#define safety_distance 0.1
+#define safety_distance 0.3
 #define translation_error 0.1
 #define rotation_error 0.2 // radians
 #define kp 0.5
@@ -233,7 +233,7 @@ class MovementNode
 			}
 
 			float ratio ;
-			#define THRSH 0.4
+			#define THRSH 0.41
 		
 			if((abs(rotation_speed) > THRSH && cond_rotation) || !cond_translation)
 			{

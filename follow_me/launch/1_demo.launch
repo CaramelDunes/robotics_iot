@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<launch>
+
+<!-- Start rviz visualization with preset config -->
+<node pkg="rviz" type="rviz" name="rviz" args="-d $(find follow_me)/rviz_cfg/followme.rviz"/>
+  
+<node name="obstacle_detection_node" pkg="follow_me" type="obstacle_detection_node" output="screen" />
+    
+<node name="movement_node" pkg="follow_me" type="movement_node" output="screen" />
+
+<arg name="t" default="0" />
+<arg name="r" default="0" />
+
+<node pkg="rostopic" type="rostopic" name="rostopic" args="pub -1 /movement_to_do geometry_msgs/Point '{x: $(arg x), y: $(arg y), z: 0}'"/>
+    
+</launch>
